@@ -245,6 +245,25 @@ stickpack.register_stick("ripstick", {
         end
     end,
 })
+--edit to add Tag stick
+
+--------------
+-- Tagstick --
+--------------
+
+stickpack.register_stick("tagstick", {
+    description = "TAGstick",
+    inventory_image = "stick_tag.png",
+    on_use = function(itemstack, player, pointed_thing)
+        -- announce the tag
+        if pointed_thing.type == "object" then
+            if pointed_thing.ref:is_player() then
+                minetest.chat_send_all(player:get_player_name().." TAGGED "..pointed_thing.ref:get_player_name().. " with a Tagstick")
+            end
+            
+        end
+    end,
+})
 
 -------------------
 -- Springy Stick --
@@ -497,6 +516,56 @@ stickpack.register_stick("rickstick", {
         end
     end,
 })
+--edit to add birbstick
+--------------
+---BIRBSTICK--
+--------------
+stickpack.register_stick("birbstick", {
+    description = "Birbstick",
+    inventory_image = "stick_birb.png",
+    on_use = function(itemstack, player, pointed_thing)
+        local name = player:get_player_name()
+        if pointed_thing.type == "object" and pointed_thing.ref:is_player() and not stickpack.limited[name] then
+            local hit_player = pointed_thing.ref
+            local hit_player_name = hit_player:get_player_name()
+            local pos = hit_player:get_pos()
+            pos.y = pos.y + 1
+
+            stickpack.limited[name] = true
+
+            -- Make following particle effect
+            stickpack.create_following_particle_effect(hit_player_name, 17, {
+                quantity_per_second = 10,
+                texture = "mobs_chicken_inv.png",
+                min_size = 1,
+                max_size = 5,
+                gravity = 0.2,
+            })
+
+            -- Play chicken song
+            minetest.sound_play("chicken", {
+                pos = pos,
+                max_hear_distance = 10,
+                gain = 1,
+            })
+
+            -- Remove limiter
+            minetest.after(17, function(name)
+                stickpack.limited[name] = nil
+            end, name)
+        end
+    end,
+})
+
+
+
+
+
+
+
+
+
+
 
 ----------------
 -- Trumpstick --
@@ -520,8 +589,8 @@ minetest.register_node("stickpack:barbedwire", {
 minetest.register_craft({
     output = "stickpack:barbedwire",
     recipe = {
-        {"default:stick"},
-        {"default:steel_ingot"},
+        {"default:stick","default:steel_ingot"},
+        
     }
 })
 
